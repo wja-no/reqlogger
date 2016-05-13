@@ -1,3 +1,5 @@
+var url = require('url');
+
 // Express middleware for assigning a logger object to req.log:
 function injectLogger(log) {
     return function (req, res, next) {
@@ -35,7 +37,11 @@ function logRequests(opts) {
 function listeningLogger(log) {
     return function () {
         var address = this.address();
-        log.info("Listening on http://" + address.address + ":" + address.port);
+        log.info("Listening on " + url.format({
+			protocol: "http",
+			hostname: address.address,
+			port: address.port
+		}));
     };
 }
 
