@@ -1,3 +1,4 @@
+// Express middleware for assigning a logger object to req.log:
 function injectLogger(log) {
     return function (req, res, next) {
         var url = req.url;
@@ -8,6 +9,7 @@ function injectLogger(log) {
     };
 }
 
+// Express middleware for logging basic info about all requests:
 function logRequests(opts) {
     var opts = opts || {};
     var threshold = opts.threshold || 500;
@@ -29,6 +31,7 @@ function logRequests(opts) {
     };
 }
 
+// Event handler for httpServer's 'listening' event, logging the host and port:
 function listeningLogger(log) {
     return function () {
         var address = this.address();
@@ -36,25 +39,15 @@ function listeningLogger(log) {
     };
 }
 
-function monkeypatchListen(app, log) {
-    var listen = app.listen;
-    app.listen = function () {
-        var httpServer = listen.apply(this, arguments);
-        httpServer.on('listening', listeningLogger(log, httpServer));
-        return httpServer;
-    };
-}
-
-function applyAll(app, log) {
-    app.use(injectLogger(log));
-    app.use(logRequests());
-    monkeypatchListen(app, log);
+// Express middleware for writing errors to req.log:
+function errorLogger(err, req, res, next) {
+    req.log.error(err.stack ? err.stack : err.toString());
+    next(err);
 }
 
 module.exports = {
     injectLogger: injectLogger,
     logRequests: logRequests,
     listeningLogger: listeningLogger,
-    monkeypatchListen: monkeypatchListen,
-    applyAll: applyAll
+    errorLogger: errorLogger
 };

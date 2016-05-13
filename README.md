@@ -15,6 +15,8 @@ Basic usage
       res.send('Hello world');
     });
 
+    app.use(reqlogger.errorLogger);
+
     app.listen(4444, reqlogger.listeningLogger(log));
 
 `injectLogger(log)` injects a logger into the http request, so we can use
@@ -34,3 +36,6 @@ Log messages produced by the above setup can look like this:
 state and is accepting connections:
 
     17:17:18.553 [app] Listening on http://127.0.0.1:4444
+
+`errorLogger` is an express error handler which logs errors to `req.log` and
+passes them on to the next error handler.
