@@ -1,10 +1,12 @@
-var url = require('url');
+'use strict';
+
+const url = require('url');
 
 // Express middleware for assigning a logger object to req.log:
 function injectLogger(log) {
     return function (req, res, next) {
-        var url = req.url;
-        var method = req.method;
+        const url = req.url;
+        const method = req.method;
         req.log = log.createSublogger(req.ip).createSublogger(method + " " + url);
 
         next();
@@ -13,17 +15,18 @@ function injectLogger(log) {
 
 // Express middleware for logging basic info about all requests:
 function logRequests(opts) {
-    var opts = opts || {};
-    var threshold = opts.threshold || 500;
+    opts = opts || {};
+    const threshold = opts.threshold || 500;
 
     return function (req, res, next) {
-        var startTime = new Date();
+        const startTime = new Date();
 
         function writeLog() {
-            var ms = new Date() - startTime;
-            var level = 'info';
-            if (ms >= threshold) level = 'warn';
-            req.log.log(level, "sent response " + res.statusCode + " in " + ms + "ms");
+			const ms = new Date() - startTime;
+			const level = 'info';
+			if (ms >= threshold) level = 'warn';
+
+			req.log.log(level, "sent response " + res.statusCode + " in " + ms + "ms");
         }
 
         if (res.finished) writeLog();
@@ -36,7 +39,7 @@ function logRequests(opts) {
 // Event handler for httpServer's 'listening' event, logging the host and port:
 function listeningLogger(log) {
     return function () {
-        var address = this.address();
+        const address = this.address();
         log.info("Listening on " + url.format({
 			protocol: "http",
 			hostname: address.address,
