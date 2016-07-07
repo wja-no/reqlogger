@@ -23,8 +23,7 @@ function logRequests(opts) {
 
         function writeLog() {
 			const ms = new Date() - startTime;
-			const level = 'info';
-			if (ms >= threshold) level = 'warn';
+			const level = (ms >= threshold) ? 'warn' : 'info';
 
 			const userAgent = req.headers['user-agent'];
 			const referrer = req.headers['referer'];
