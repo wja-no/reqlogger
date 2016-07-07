@@ -26,7 +26,14 @@ function logRequests(opts) {
 			const level = 'info';
 			if (ms >= threshold) level = 'warn';
 
-			req.log.log(level, "sent response " + res.statusCode + " in " + ms + "ms");
+			const userAgent = req.headers['user-agent'];
+			const referrer = req.headers['referer'];
+
+			const uaString = userAgent ? `with User-Agent ${JSON.stringify(userAgent)}` : "without User-Agent";
+			const referrerString = referrer ? `with Referer ${JSON.stringify(referrer)}` : "without Referer";
+
+			req.log.log(level,
+				`sent response ${res.statusCode} in ${ms}ms, requested ${uaString} ${referrerString}`);
         }
 
         if (res.finished) writeLog();
